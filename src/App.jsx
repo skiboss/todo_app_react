@@ -108,7 +108,9 @@ export default function App() {
 
       {todoList.length > 0 ? (<ul className="todo">
         {todoList.map((x) => (
-          <li key={x.id}>
+          <li key={x.id}
+              style={{ textDecoration: x.isChecked && "line-through"}}
+          >
             <label>
             <Input
               type="checkbox"
