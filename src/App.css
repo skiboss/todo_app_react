@@ -113,6 +113,11 @@ ul.todo {
   padding: 0.5rem 0;
 }
 
+.todo input {
+  font-size: 2rem;
+  margin-right: 1rem;
+}
+
 .del {
   margin-right: 1rem;
   font-size: 1.5rem;

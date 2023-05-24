@@ -1,6 +1,6 @@
 import Input from "./components/Input";
 import Button from "./components/Button";
-import { useState } from "react";
+import { useState} from "react";
 import "./App.css";
 import { BsTrash } from 'react-icons/bs'
 import Heading from './components/Heading'
@@ -11,127 +11,155 @@ import Footer from "./components/Footer";
 
 export default function App() {
   // const [tab, setTab] = useState(0)
+  // const [formData, setFormData] = useState({
+  //   key: 0,
+  //   todo: "",
+  //   isChecked: false,
+  // });
+
+  const [textInput, setTextInput] = useState("")
+  const [isChecked, setIsChecked] = useState(false)
   const [todoList, setTodoList] = useState([]);
-  const [formData, setFormData] = useState({
-    key: 0,
-    todo: "",
-    isChecked: false,
-  });
 
-  function handleChange(event) {
-    const { name, value, checked, type } = event.target;
+
+  // function handleChange(event) {
+  //   const { name, value, checked, type } = event.target;
+  //   const id = todoList.length + 1;
+
+  //   setFormData({
+  //     key: id,
+  //     [name]: type === "checkbox" ? checked : value,
+  //     isChecked: formData.isChecked,
+  //   });
+
+  //   console.log(todoList)
+  // }
+
+  function addTodo (todo) {
     const id = todoList.length + 1;
-
-    setFormData({
-      key: id,
-      [name]: type === "checkbox" ? checked : value,
-      isChecked: formData.isChecked,
-    });
-
-    console.log(todoList)
+    const newTodo = {id, ...todo}
+    setTodoList([...todoList, newTodo])
   }
 
   function handleSubmit(e) {
     e.preventDefault();
     // console.log(formData)
-    if (formData.todo !== "") {
-      setTodoList((prev) => {
-        return [...prev, formData];
-      });
-
-      return setFormData({
-        key: 0,
-        todo: "",
-        isChecked: false
-      });
+    if (!textInput) {
+      alert("Please add a todo")
+      return
     }
+
+    addTodo({textInput, isChecked})
+
     // Clear the input after submitting if successfull
+    setTextInput("")
+    setIsChecked(false)
   }
 
   const deleteTodo = (id) => {
     setTodoList(todoList.filter((x) => x.id !== id))
   }
 
-  // function handleComplete() {
-  //   return (
-  //     <ul className="todo">
-  //       {todoList.filter((x) =>
-  //         x.isChecked ? (
-  //           <li className="">
-  //             <span>
-  //             <Input
-  //               id="checkbox"
-  //               type="checkbox"
-  //               handleChange={handleChange}
-  //               name="isChecked"
-  //               value={formData.isChecked}
-  //             />
-  //             {x.todo}
-  //             </span>
+  const handleChecked = (id) => {
+    
+    setTodoList(
+      todoList.map((todo) => 
+      todo.id === id ? { ...todo, isChecked:
+          !todo.isChecked} : todo
+      )
+    )
+  }
 
-  //             <span>
-  //               <FaTimes onClick={() => deleteTodo(x.id)} />
-  //             </span>
-  //           </li>
-  //         ) : (
-  //           ""
-  //         )
-  //       )}
-  //     </ul>
-  //   //   {todoList.isChecked.length > 0 ? <ul className='todo'>
-  //   //   {todoList.map((x) => x.isChecked ? "" :
-  //   //   <li>
-  //   //     <Input type="checkbox" 
-  //   //       handleChange={handleChange} 
-  //   //       name="todoItems" 
-  //   //       value={formData.isChecked} />
-  //   //      {x.todo} 
-  //   //      <FaTimes onClick={() => deleteTodo(x.id)} />
-  //   //   </li>)}
-  //   // </ul> : "no completed task"}
-  //   );
-  // }
+  // useEffect(() => {
+  //   switch (tab) {
+  //     case 0:
+  //       setTodoList(todoList);
+  //       break;
+  //     case 1:
+  //       setTodoList(todoList.filter((x) => !x.isChecked));
+  //       break;
+  //     case 2:
+  //       setTodoList(todoList.filter((x) => x.isChecked));
+  //       break;
+  //   }
+  // }, [todolist]);
 
   return (
     <main>
       <Heading />
       <Nav
         //handleComplete={handleComplete}
-        hey={() => console.log("hey")}
+        // active={() => setTab(1)}
+        // completed={() => setTab(2)}
       />
             <hr />
       <form onSubmit={(e) => handleSubmit(e)}>
         
         <Input
           type="text"
-          handleChange={handleChange}
+          handleChange={(e) => setTextInput(e.target.value)}
           name="todo"
-          value={formData.todo}
+          value={textInput}
           placeholder="add details"
         />
 
         <Button text="Add" color="blue" Class="button" />
       </form>
-      <ul className="todo">
+
+      {todoList.length > 0 ? (<ul className="todo">
         {todoList.map((x) => (
-          <li key={formData.id}>
+          <li key={x.id}>
             <label>
             <Input
               type="checkbox"
-              handleChange={handleChange}
               name="isChecked"
-              checked={formData.isChecked}
+              checked={x.isChecked}
+              value={x.isChecked}
+              handleChange={() => handleChecked(x.id)}
             />
-            {x.todo}</label>
+            {x.textInput}</label>
             
             <span>
-            <BsTrash className="del" onClick={() => deleteTodo(x.id)} />
+            {x.isChecked && <BsTrash className="del" onClick={() => deleteTodo(x.id)} />}
             </span>
           </li>
-        ))}
-      </ul>
+        )) }
 
-      {/* {console.log(todoList)} */}
+        {/* {tab === 1 && todoList.filter((x) => x.isChecked === false ? 
+                  <li key={x.id}>
+                    <label>
+                    <Input
+                      type="checkbox"
+                      name="isChecked"
+                      checked={x.isChecked}
+                      value={x.isChecked}
+                      handleChange={() => handleChecked(x.id)}
+                    />
+                    {x.textInput} </label>
+                  </li>
+           : "No active item")} */}
+
+        {/* {tab === 2 && setTodoList(todoList.filter((x) => x.isChecked ? (
+                    <li key={x.id}>
+                      <label>
+                      <Input
+                        type="checkbox"
+                        name="isChecked"
+                        checked={x.isChecked}
+                        value={x.isChecked}
+                        handleChange={() => handleChecked(x.id)}
+                      />
+                      {x.textInput}</label>
+                      
+                      <span>
+                      <BsTrash className="del" onClick={() => deleteTodo(x.id)} />
+                      </span>
+                    </li>
+                  ) : "No completed task"))} */}
+
+
+
+        </ul>) : "No Todo item yet"}
       <Footer />
     </main>
   );
